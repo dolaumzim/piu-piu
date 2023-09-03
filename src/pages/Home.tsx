@@ -71,7 +71,7 @@ export const Home = () => {
         initialLoading={true}
         topRef={topRef}
         bottomRef={bottomRef}
-        loading={true}
+        loading={false}
         piupius={piupius}
         onChange={() => {}}
       />
