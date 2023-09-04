@@ -1,30 +1,39 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 interface GlobalContextType{
-    loginToken : string,
-    setLoginToken : React.Dispatch<React.SetStateAction<string>>
+    isLoggedIn : boolean,
+    setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 const GlobalContext = createContext<GlobalContextType>({
-    loginToken : '',
-    setLoginToken : () => {}
+    isLoggedIn : false,
+    setIsLoggedIn : () => {},
 })
 
 export const GlobalProvider = ({children} : React.PropsWithChildren) => {
-    const [loginToken, setLoginToken] = useState('')
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+    useEffect(() => {
+      const logInToken = localStorage.getItem('token')
+  
+      if (!logInToken) {
+        setIsLoggedIn(false)
+        return
+      }
+      setIsLoggedIn(true)
+    }, [])
 
     return(
-      <GlobalContext.Provider value={{loginToken, setLoginToken}}>
+      <GlobalContext.Provider value={{isLoggedIn, setIsLoggedIn}}>
         {children}
       </GlobalContext.Provider>
         )
 }
 
-export const useToken = () => {
+export const useGlobal = () => {
     const ctx = useContext(GlobalContext);
   if (ctx === undefined) {
     throw new Error("Tem que ser usado dentro de um Provider");
   }
   return ctx
-
 }

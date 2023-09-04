@@ -3,7 +3,8 @@ import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { AuthFormLayout } from "../components/AuthFormLayout";
 import { Link, useNavigate } from "react-router-dom";
-import { loginRequest } from "../service/requestsAPI";
+import { logInRequest } from "../service/requestsAPI";
+import { useGlobal } from "../context/global";
 
 
 export const Login = () => {
@@ -13,17 +14,21 @@ export const Login = () => {
   const [loginError, setLoginError] = useState(false)
 
   const onSubmit = async (e: React.FormEvent) => {
+    logInRequisition();
     e.preventDefault();
   };
 
   const navigate = useNavigate()
-  
-  const teste = async() => {
+  const {setIsLoggedIn} = useGlobal()
+
+  const logInRequisition = async() => {
     try {
       setIsLoading(true)
-      const data = await loginRequest(user,password)
-      console.log(data)
-      // navigate('/home')
+      const data = await logInRequest(user,password)
+      localStorage.setItem('token',data.token)
+      localStorage.setItem('user',JSON.stringify(data.user))
+      setIsLoggedIn(true)
+      navigate('/home')
       
     } catch (error) {
       console.log(error)
@@ -59,7 +64,7 @@ export const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button onClick={()=>teste()} loading={isLoading} thickness="thick">
+        <Button loading={isLoading} thickness="thick">
           Login
         </Button>
         {loginError ? <span className="text-red-600 mx-auto ">Email ou Senha incorretos!</span> : null}

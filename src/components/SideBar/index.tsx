@@ -3,13 +3,16 @@ import { BsPerson } from "react-icons/bs";
 import { LuVerified } from "react-icons/lu";
 import { Button } from "../Button";
 import { SessionController } from "../SessionController";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Dialog } from "../Dialog";
 import NewPiupiu from "../NewPiupiu";
 import { useState } from "react";
 import axios from "axios";
 import { User } from "../../types/Users";
 import { backendRoutes } from "../../routes";
+import { useGlobal } from "../../context/global";
+
+
 export const SideBar = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [addingPiupiu, setAddingPiupiu] = useState(false);
@@ -30,6 +33,19 @@ export const SideBar = () => {
         setOpenDialog(false);
       });
   };
+
+  const navigate = useNavigate()
+  const {setIsLoggedIn} = useGlobal()
+
+  const handleLogOut = ()=>{
+    localStorage.clear()
+    setIsLoggedIn(false)
+    navigate('/')
+  }
+
+  const userString = localStorage.getItem('user')
+  const userJson: User = userString && JSON.parse(userString)
+
 
   return (
     <>
@@ -71,13 +87,13 @@ export const SideBar = () => {
           </div>
         </div>
         <SessionController
-          user={{} as User}
+          user={userJson}
           options={[
             {
               text: "Entrar com outra conta",
               onClick: () => {},
             },
-            { text: `Sair de @`, onClick: () => {} },
+            { text: `Sair de @${userJson.handle}`, onClick: () => {handleLogOut()} },
           ]}
         />
       </nav>

@@ -9,6 +9,7 @@ import { piuComponentHeight } from "../consts";
 import { User } from "../types/Users";
 import { routes } from "../routes";
 
+
 export const Home = () => {
   const [textValue, setTextValue] = useState("");
   const [piupius, setPiupius] = useState<Piu[] | undefined>();
@@ -42,6 +43,7 @@ export const Home = () => {
         setAddingPiupiu(false);
       });
   };
+
 
   return (
     <div ref={topRef} className="relative">
