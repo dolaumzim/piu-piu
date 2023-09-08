@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NewPiupiu } from "../components/NewPiupiu";
 import { Piu } from "../types/Pius";
 import NavTitle from "../components/NavTitle";
@@ -8,6 +8,8 @@ import { usePagination } from "../hooks/useScroll";
 import { piuComponentHeight } from "../consts";
 import { User } from "../types/Users";
 import { routes } from "../routes";
+import { useGlobal } from "../context/global";
+import { newPiuRequest, piuListRequest } from "../service/requestsAPI";
 
 
 export const Home = () => {
@@ -31,19 +33,33 @@ export const Home = () => {
 
   const handleSubmit = async (e: React.FormEvent, formValue?: string) => {
     e.preventDefault();
+    
+  try {
     setAddingPiupiu(true);
-    axios
-      .post("/posts", {
-        message: formValue,
-      })
-      .then(() => {
-        setTextValue("");
-      })
-      .finally(() => {
-        setAddingPiupiu(false);
-      });
+    newPiuRequest(formValue)
+  } catch (error) {
+    console.log(error)
+  } finally{
+    setTextValue('')
+    setAddingPiupiu(false)
+  }  
   };
 
+  const listPius = async() => {
+    const data = await piuListRequest('', 1, itemsPerPage)
+    setPiupius(data)
+  }
+
+  useEffect(() => {
+
+    try {
+      listPius()
+    } catch (error) {
+      console.log(error)
+    }
+  },[])
+
+  const {localUser} = useGlobal()
 
   return (
     <div ref={topRef} className="relative">
@@ -67,10 +83,10 @@ export const Home = () => {
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}
         onSubmit={handleSubmit}
-        user={{} as User}
+        user={localUser as User}
       />
       <PiupiuList
-        initialLoading={true}
+        initialLoading={false}
         topRef={topRef}
         bottomRef={bottomRef}
         loading={false}

@@ -7,11 +7,10 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Dialog } from "../Dialog";
 import NewPiupiu from "../NewPiupiu";
 import { useState } from "react";
-import axios from "axios";
 import { User } from "../../types/Users";
-import { backendRoutes } from "../../routes";
+import { backendRoutes, routes } from "../../routes";
 import { useGlobal } from "../../context/global";
-
+import { newPiuRequest } from "../../service/requestsAPI";
 
 export const SideBar = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -20,22 +19,20 @@ export const SideBar = () => {
 
   const handleSubmit = async (e: React.FormEvent, formValue?: string) => {
     e.preventDefault();
-    setAddingPiupiu(true);
-    axios
-      .post("/posts", {
-        message: formValue,
-      })
-      .then(() => {
-        setTextValue("");
-      })
-      .finally(() => {
-        setAddingPiupiu(false);
-        setOpenDialog(false);
-      });
-  };
 
+    try {
+      setAddingPiupiu(true);
+      newPiuRequest(formValue)
+    } catch (error) {
+      console.log(error)
+    } finally{
+      setTextValue('')
+      setAddingPiupiu(false)
+    }  
+    };
+  
   const navigate = useNavigate()
-  const {setIsLoggedIn} = useGlobal()
+  const {setIsLoggedIn, localUser} = useGlobal()
 
   const handleLogOut = ()=>{
     localStorage.clear()
@@ -43,18 +40,16 @@ export const SideBar = () => {
     navigate('/')
   }
 
-  const userString = localStorage.getItem('user')
-  const userJson: User = userString && JSON.parse(userString)
-
-
   return (
     <>
       <nav className="px-2 sticky top-0 left-0 h-screen pb-4 xl:w-64 hidden sm:flex flex-col justify-between select-none">
         <div>
+        <NavLink to="/home">
           <img
             className="w-16 p-2 rounded-full mb-5 hover:bg-zinc-900"
             src="/logo.png"
           />
+          </NavLink>
           <ul>
             <NavLink to="/home">
               <li className="flex mb-4 cursor-pointer pr-8 w-min p-3 rounded-full hover:bg-zinc-900 items-center gap-4">
@@ -63,7 +58,8 @@ export const SideBar = () => {
               </li>
             </NavLink>
             <NavLink
-              to={backendRoutes.profile()}
+              to={routes.profile(localUser.handle)}
+              // to={backendRoutes.profile(localUser.handle)}
               className={({ isActive }) => (isActive ? "font-bold" : "")}
             >
               <li className="flex mb-4 p-3 pr-8 w-min cursor-pointer  rounded-full hover:bg-zinc-900 items-center gap-4">
@@ -87,13 +83,13 @@ export const SideBar = () => {
           </div>
         </div>
         <SessionController
-          user={userJson}
+          user={localUser}
           options={[
             {
               text: "Entrar com outra conta",
               onClick: () => {},
             },
-            { text: `Sair de @${userJson.handle}`, onClick: () => {handleLogOut()} },
+            { text: `Sair de @${localUser.handle}`, onClick: () => {handleLogOut()} },
           ]}
         />
       </nav>
