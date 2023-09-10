@@ -9,6 +9,7 @@ import NewPiupiu from "../NewPiupiu";
 import { forwardRef } from "react";
 import { checkForImageLinks } from "../../helpers";
 import { backendRoutes, routes } from "../../routes";
+import { dislikeRequest, likeRequest, likedRequest, replyRequest } from "../../service/requestsAPI";
 
 type PiupiuProps = {
   id: string;
@@ -30,36 +31,51 @@ export const Piupiu = forwardRef(
     const [replies, setReplies] = useState(reactions.comment.total || 0);
     const navigate = useNavigate();
     const replyRef = useRef<HTMLDivElement | null>(null);
-    const debounceTimer = useRef<number | undefined>();
+    // const debounceTimer = useRef<number | undefined>();
     const [foundLinks, setFoundLinks] = useState("");
+    const storageUser = JSON.parse(localStorage.getItem('user') as string)
+    
 
     const handleLike = useCallback(async () => {
-      setLiked(!liked);
-      clearTimeout(debounceTimer.current);
-      debounceTimer.current = setTimeout(async () => {
-        if (liked !== reactions.like?.active) return;
-        try {
-          if (!liked) {
-            await axios.post(backendRoutes.singlePiupiu.like(id));
-          } else {
-            await axios.delete(backendRoutes.singlePiupiu.like(id));
-          }
-        } catch (err) {
-          setLiked(!liked);
-          console.log(err);
-        } finally {
-          onChange?.();
-        }
-      }, 250);
-    }, [id, liked, onChange, reactions.like, debounceTimer.current]);
+      try {
+        liked ? 
+        await dislikeRequest(id ? id : '', storageUser.handle)
+        :await likeRequest(id ? id : '', storageUser.handle)
+        const responseLiked = await likedRequest(id as string, storageUser.handle)
+        const likedByUser : number = responseLiked.data.total
+        setLikesTotal(likedByUser)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLiked(!liked)
+      }
+
+
+      // setLiked(!liked);
+      // clearTimeout(debounceTimer.current);
+      // debounceTimer.current = setTimeout(async () => {
+      //   if (liked !== reactions.like?.active) return;
+      //   try {
+      //     if (!liked) {
+      //       await axios.post(backendRoutes.singlePiupiu.like(id));
+      //     } else {
+      //       await axios.delete(backendRoutes.singlePiupiu.like(id));
+      //     }
+      //   } catch (err) {
+      //     setLiked(!liked);
+      //     console.log(err);
+      //   } finally {
+      //     onChange?.();
+      //   }
+      // }, 250);
+    // }, [id, liked, onChange, reactions.like, debounceTimer.current]);
+    },[liked])
 
     const handleSubmit = async (e: React.FormEvent, submitingText?: string) => {
       e.preventDefault();
       setReplying(true);
       try {
-        await axios.post(`/posts/${id}/reply`, {
-          message: submitingText,
-        });
+        replyRequest(id as string, replyText as string, storageUser.handle);
         setReplies(replies + 1);
         setReplyText("");
       } catch (err) {

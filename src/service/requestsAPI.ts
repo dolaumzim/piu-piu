@@ -53,8 +53,22 @@ export async function singlePiuRequest (id : string)  {
   return await piupiuAPI.get(routes.singlePiupiu(id))
 }
 
-export async function likeRequest (id : string, isLiked :boolean)  {
-  isLiked? 
-  await piupiuAPI.post(backendRoutes.singlePiupiu.like(id)) :
-  await piupiuAPI.delete(backendRoutes.singlePiupiu.like(id))
+export async function repliesRequest (id : string)  {
+  return await piupiuAPI.get(backendRoutes.singlePiupiu.replies(id))
 }
+
+export async function replyRequest (id : string, message : string, handle : string)  {
+  return await piupiuAPI.post(backendRoutes.singlePiupiu.reply(id), {params:{handle}, message})
+}
+
+export async function likeRequest (id : string, handle : string)  {
+  await piupiuAPI.post(backendRoutes.singlePiupiu.like(id),{params:{handle}})
+  }
+
+export async function dislikeRequest (id : string, handle : string)  {
+  await piupiuAPI.delete(backendRoutes.singlePiupiu.like(id),{params:{handle}})
+  }
+
+  export async function likedRequest (id : string, handle : string)  {
+    return await piupiuAPI.get(`/posts/${id}/likes`, {params:{handle}})
+  }

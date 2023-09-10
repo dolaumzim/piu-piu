@@ -12,7 +12,6 @@ import { SinglePiupiu } from "../pages/SinglePiupiu";
 export const PiupiuRoutes = () => {
 
   const isToken = localStorage.getItem('token')
-  console.log({isToken})
   const {isLoggedIn, setIsLoggedIn} = useGlobal()
 
   return ( 
