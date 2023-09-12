@@ -5,6 +5,7 @@ import { AuthFormLayout } from "../components/AuthFormLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { postsRequest, logInRequest } from "../service/requestsAPI";
 import { useGlobal } from "../context/global";
+import { routes } from "../routes";
 
 
 export const Login = () => {
@@ -19,7 +20,7 @@ export const Login = () => {
   };
 
   const navigate = useNavigate()
-  const {setIsLoggedIn} = useGlobal()
+  const {setIsLoggedIn,setLocalUser,setToken} = useGlobal()
 
   const logInRequisition = async() => {
     try {
@@ -28,22 +29,20 @@ export const Login = () => {
       localStorage.setItem('token',data.token)
       localStorage.setItem('user',JSON.stringify(data.user))
       setIsLoggedIn(true)
-      navigate('/home')
-      
+      setLocalUser(data.user)
+      setToken(data.token)
     } catch (error) {
       console.log(error)
       setLoginError(true)
       setTimeout(() => {
         setLoginError(false)
-      }, 3000);
-      
+      }, 3000); 
     }
     finally{
       setIsLoading(false)
+      navigate(routes.home)
     }
-
   }
-
 
   return (
     <AuthFormLayout>

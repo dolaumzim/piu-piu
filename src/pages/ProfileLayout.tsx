@@ -11,41 +11,34 @@ import { Dialog } from "../components/Dialog";
 import { routes } from "../routes";
 import { useGlobal } from "../context/global";
 import { postsRequest } from "../service/requestsAPI";
+import { useQuery } from "@tanstack/react-query";
 
 export const ProfileLayout = () => {
   const [user, setUser] = useState<User>();
   const [userPosts, setUserPosts] = useState<number>();
   const [dialogOpen, setDialogOpen] = useState(false);
-  let liveHandle = useParams()
+  let {handle} = useParams()
 
   const handleDialogClick = async() => {
     setDialogOpen(!dialogOpen);
   };
 
-  const {localUser} = useGlobal()
+  const {localUser,token} = useGlobal()
   const navigate = useNavigate()
 
-  let getLiveHandle =()=>{
-    return liveHandle.handle
-  }
-
-  const getProfile = async(handle : string) =>{
-    try {
-      const response = await postsRequest(handle)
+  const {} = useQuery({
+    queryKey : ['profilePosts', handle],
+    queryFn : async() =>{
+      const response = await postsRequest(handle ?? '',token)
       setUserPosts(response.data.posts)
       setUser(response.data.user)
-    } catch (error) {
-      console.log(error)
-      navigate('/home')
-    }
-
-  }
-
-  useEffect(()=>{
-    const liveUser = getLiveHandle()
-    getProfile(liveUser ? liveUser : '')
-  },[liveHandle])
-
+      return response
+    },
+    onError: () => {
+      navigate(routes.home)
+    },
+    retry : 0
+  })
 
   return (
     <>

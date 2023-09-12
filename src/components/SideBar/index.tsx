@@ -8,31 +8,37 @@ import { Dialog } from "../Dialog";
 import NewPiupiu from "../NewPiupiu";
 import { useState } from "react";
 import { User } from "../../types/Users";
-import { backendRoutes, routes } from "../../routes";
+import { routes } from "../../routes";
 import { useGlobal } from "../../context/global";
 import { newPiuRequest } from "../../service/requestsAPI";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const SideBar = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [addingPiupiu, setAddingPiupiu] = useState(false);
   const [textValue, setTextValue] = useState("");
+  const queryClient = useQueryClient()
+
+  const navigate = useNavigate()
+  const {setIsLoggedIn, localUser, token} = useGlobal()
 
   const handleSubmit = async (e: React.FormEvent, formValue?: string) => {
     e.preventDefault();
 
+
     try {
       setAddingPiupiu(true);
-      newPiuRequest(formValue)
+      newPiuRequest(formValue, token)
+      queryClient.invalidateQueries(['setpiupius'])
     } catch (error) {
       console.log(error)
     } finally{
       setTextValue('')
+      setOpenDialog(false)
       setAddingPiupiu(false)
     }  
     };
   
-  const navigate = useNavigate()
-  const {setIsLoggedIn, localUser} = useGlobal()
 
   const handleLogOut = ()=>{
     localStorage.clear()
@@ -59,7 +65,6 @@ export const SideBar = () => {
             </NavLink>
             <NavLink
               to={routes.profile(localUser.handle)}
-              // to={backendRoutes.profile(localUser.handle)}
               className={({ isActive }) => (isActive ? "font-bold" : "")}
             >
               <li className="flex mb-4 p-3 pr-8 w-min cursor-pointer  rounded-full hover:bg-zinc-900 items-center gap-4">
@@ -101,7 +106,7 @@ export const SideBar = () => {
             loading={addingPiupiu}
             onSubmit={handleSubmit}
             variant="borderless"
-            user={{} as User}
+            user={localUser as User}
           />
         </div>
       </Dialog>

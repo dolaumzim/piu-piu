@@ -1,39 +1,35 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PiupiuList } from "../components/PiupiuList";
 import { userPiuListRequest } from "../service/requestsAPI";
 import { Piu } from "../types/Pius";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useGlobal } from "../context/global";
+import { useQuery } from "@tanstack/react-query";
 
 type ProfileProps = {
   postsRoute: "posts" | "likes";
 };
 export const Profile = ({ postsRoute }: ProfileProps) => {
   const [piupius, setPiupius] = useState<Piu[] | undefined>();
-  const [initialLoading, setInitialLoading] = useState<boolean>();
   let {handle} = useParams()
+  const {token} = useGlobal()
   
-  useEffect(() => {
-    const listPius = async() => {
-      const data = await userPiuListRequest(handle? handle:'', postsRoute)
-      setPiupius(data)
-    }
-
-    try {
-      setInitialLoading(true)
-      listPius()
-      
-    } catch (error) {
+  const {isFetching} = useQuery({
+    queryKey : ['postsAndLikes', postsRoute, handle],
+    queryFn : async() => {
+      const response = await userPiuListRequest(handle ?? '', postsRoute, token)
+      setPiupius(response)
+      return response
+    },
+    onError: (error) => {
       console.log(error)
-
-    } finally {
-      setInitialLoading(false)
-    }
-  },[postsRoute])
+    },
+  })
 
   return (
     <>
       <main>
-        <PiupiuList initialLoading={initialLoading} piupius={piupius} />
+        <PiupiuList initialLoading={isFetching} piupius={piupius} />
       </main>
     </>
   );
