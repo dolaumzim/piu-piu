@@ -1,13 +1,17 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { User } from "../types/Users";
 
+const logInToken = localStorage.getItem('token')
+const userAux : User = JSON.parse(localStorage.getItem('user') as string)
+
+
 interface GlobalContextType{
     isLoggedIn : boolean,
     setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>,
     localUser : User,
     setLocalUser : React.Dispatch<React.SetStateAction<User>>
-    profileUser : User,
-    setProfileUser : React.Dispatch<React.SetStateAction<User>>
+    token : string,
+    setToken : React.Dispatch<React.SetStateAction<string>>
 }
 
 const GlobalContext = createContext<GlobalContextType>({
@@ -15,29 +19,21 @@ const GlobalContext = createContext<GlobalContextType>({
     setIsLoggedIn : () => {},
     localUser : {} as User,
     setLocalUser : () => {},
-    profileUser : {} as User,
-    setProfileUser : () => {}
+    token : {} as string,
+    setToken : () => {}
 })
 
 export const GlobalProvider = ({children} : React.PropsWithChildren) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [localUser, setLocalUser] = useState<User>({} as User)
-    const [profileUser, setProfileUser] = useState<User>({} as User)
+  const [localUser, setLocalUser] = useState<User>(userAux)
+  const [isLoggedIn, setIsLoggedIn] = useState(localUser?true:false)
+  const [token, setToken] = useState<string>(logInToken ?? '')
     
-    useEffect(() => {
-      const logInToken = localStorage.getItem('token')
-      const userAux= localStorage.getItem('user')
-      setLocalUser(userAux && JSON.parse(userAux))
-
-      if (!logInToken) {
-        setIsLoggedIn(false)
-        return
-      }
-      setIsLoggedIn(true)
-    }, [])
+    // useEffect(() => {
+    //   setLocalUser(userAux && userAux)  
+    // }, [])
 
     return(
-      <GlobalContext.Provider value={{isLoggedIn, setIsLoggedIn, localUser, setLocalUser, profileUser, setProfileUser}}>
+      <GlobalContext.Provider value={{isLoggedIn, setIsLoggedIn, localUser, setLocalUser, token, setToken}}>
         {children}
       </GlobalContext.Provider>
         )

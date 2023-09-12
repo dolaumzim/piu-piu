@@ -4,29 +4,25 @@ import Button from "../components/Button";
 import { SideList } from "../components/SideList";
 import { Outlet } from "react-router-dom";
 import { latestRequest } from "../service/requestsAPI";
-import {useEffect, useState} from 'react'
-import { User } from "../types/Users";
+import { useGlobal } from "../context/global";
+import { useQuery } from "@tanstack/react-query";
 
 export const MainLayout = () => {
-  const [loading, setLoading] = useState(false)
-  const [latestUsers, setLatestUsers] = useState<User[] | undefined>()
+  const {token} = useGlobal()
   
-  const latest = async () => {
-    const response = await latestRequest()
-    setLatestUsers(response)
-  }
-  
-  useEffect(()=>{
-    try {
-      setLoading(true)
-      latest()
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
+  const {isLoading, data} = useQuery(
+    {
+      queryKey : ['latestPius'],
+      queryFn : async() =>{
+        return await latestRequest(token)
+      },
+      onError: (error)=>{
+        console.log(error)
+      },
+      refetchInterval: 300000
     }
-  },[])
-
+  )
+  
   return (
     <>
       <SideBar />
@@ -45,7 +41,7 @@ export const MainLayout = () => {
             </Button>
           </div>
         </SideCard>
-        <SideList loading={loading} users={latestUsers} />
+        <SideList loading={isLoading} users={data} />
       </div>
     </>
   );

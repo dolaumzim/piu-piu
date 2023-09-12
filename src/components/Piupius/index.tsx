@@ -3,13 +3,13 @@ import { User } from "../../types/Users";
 import { ProfilePic } from "../ProfilePic";
 import { ReactionsBar, reactions } from "../ReactionsBar";
 import { Username } from "../Username";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NewPiupiu from "../NewPiupiu";
 import { forwardRef } from "react";
 import { checkForImageLinks } from "../../helpers";
-import { backendRoutes, routes } from "../../routes";
+import { routes } from "../../routes";
 import { dislikeRequest, likeRequest, likedRequest, replyRequest } from "../../service/requestsAPI";
+import { useGlobal } from "../../context/global";
 
 type PiupiuProps = {
   id: string;
@@ -17,11 +17,12 @@ type PiupiuProps = {
   body: string;
   onChange?: () => void;
   reactions: Record<
-    (typeof reactions)[number],
-    { active?: boolean; total?: number }
+  (typeof reactions)[number],
+  { active?: boolean; total?: number }
   >;
   onClick?: () => void;
 };
+
 export const Piupiu = forwardRef(
   ({ id, author, body, reactions, onChange, onClick }: PiupiuProps, ref) => {
     const [liked, setLiked] = useState(reactions.like?.active);
@@ -31,16 +32,16 @@ export const Piupiu = forwardRef(
     const [replies, setReplies] = useState(reactions.comment.total || 0);
     const navigate = useNavigate();
     const replyRef = useRef<HTMLDivElement | null>(null);
-    // const debounceTimer = useRef<number | undefined>();
     const [foundLinks, setFoundLinks] = useState("");
     const storageUser = JSON.parse(localStorage.getItem('user') as string)
     
+    const {token} = useGlobal()
 
     const handleLike = useCallback(async () => {
       try {
         liked ? 
-        await dislikeRequest(id ? id : '', storageUser.handle)
-        :await likeRequest(id ? id : '', storageUser.handle)
+        await dislikeRequest(id ? id : '', storageUser.handle, token)
+        :await likeRequest(id ? id : '', storageUser.handle, token)
         const responseLiked = await likedRequest(id as string, storageUser.handle)
         const likedByUser : number = responseLiked.data.total
         setLikesTotal(likedByUser)
@@ -49,33 +50,13 @@ export const Piupiu = forwardRef(
       } finally {
         setLiked(!liked)
       }
-
-
-      // setLiked(!liked);
-      // clearTimeout(debounceTimer.current);
-      // debounceTimer.current = setTimeout(async () => {
-      //   if (liked !== reactions.like?.active) return;
-      //   try {
-      //     if (!liked) {
-      //       await axios.post(backendRoutes.singlePiupiu.like(id));
-      //     } else {
-      //       await axios.delete(backendRoutes.singlePiupiu.like(id));
-      //     }
-      //   } catch (err) {
-      //     setLiked(!liked);
-      //     console.log(err);
-      //   } finally {
-      //     onChange?.();
-      //   }
-      // }, 250);
-    // }, [id, liked, onChange, reactions.like, debounceTimer.current]);
     },[liked])
 
     const handleSubmit = async (e: React.FormEvent, submitingText?: string) => {
       e.preventDefault();
       setReplying(true);
       try {
-        replyRequest(id as string, replyText as string, storageUser.handle);
+        replyRequest(id as string, replyText as string, storageUser.handle,token);
         setReplies(replies + 1);
         setReplyText("");
       } catch (err) {

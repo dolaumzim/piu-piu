@@ -11,35 +11,68 @@ import { SinglePiupiu } from "../pages/SinglePiupiu";
 
 export const PiupiuRoutes = () => {
 
-  const isToken = localStorage.getItem('token')
-  const {isLoggedIn, setIsLoggedIn} = useGlobal()
+  // const isToken = localStorage.getItem('token')
+  const {isLoggedIn} = useGlobal()
 
+  
+  if (isLoggedIn)
   return ( 
     
     <Routes>
-      <Route index element={!isLoggedIn? <Login/> : <Navigate to={routes.home}/>}/>
 
-      <Route path={routes.signup} element={!isLoggedIn? <SignUp/> : <Navigate to={routes.home}/>}/>
-
-      <Route path={'/'} element={isLoggedIn ? <MainLayout/> : <Navigate to={routes.login}/>}>
+      <Route element={<MainLayout/>}>
         <Route path={routes.home} element={<Home/>}/>
         
         <Route path={routes.profile(':handle')} element={<ProfileLayout/>}>
           <Route path={routes.profile(':handle')} element={<Profile postsRoute='posts'/>}/>
           <Route path={routes.userLikes(':handle')} element={<Profile postsRoute='likes'/>}/>
         </Route>
-      </Route>
 
-      <Route path={routes.following} element={isToken ? <MainLayout/> : <Navigate to={routes.login}/>}>
         <Route path={routes.following} element={<Home/>}/>
-      </Route>
 
-      <Route path={routes.singlePiupiu(':id')} element={<MainLayout/>}>
         <Route path={routes.singlePiupiu(':id')} element={<SinglePiupiu/>}/>
+        
       </Route>
 
-      {/* <Route path="/*" element={<Navigate replace to={routes.home}/>}/> */}
+      <Route path="/*" element={<Navigate replace to={routes.home}/>}/>
      
     </Routes>
     )
-};
+    return(
+    <Routes>
+      <Route path="/*" element={<Navigate replace to={routes.login}/>}/>
+
+      <Route index element={!isLoggedIn? <Login/> : <Navigate to={routes.home}/>}/>
+
+      <Route path={routes.signup} element={!isLoggedIn? <SignUp/> : <Navigate to={routes.home}/>}/>
+
+    </Routes>
+    )
+  };
+  
+    // <Routes>
+    //   <Route index element={!isLoggedIn? <Login/> : <Navigate to={routes.home}/>}/>
+    
+    //   <Route path={routes.signup} element={!isLoggedIn? <SignUp/> : <Navigate to={routes.home}/>}/>
+
+    //   <Route path={'/'} element={isLoggedIn ? <MainLayout/> : <Navigate to={routes.login}/>}>
+    //     <Route path={routes.home} element={<Home/>}/>
+        
+    //     <Route path={routes.profile(':handle')} element={isLoggedIn ? <ProfileLayout/> :<Navigate to={routes.login}/>}>
+    //       <Route path={routes.profile(':handle')} element={<Profile postsRoute='posts'/>}/>
+    //       <Route path={routes.userLikes(':handle')} element={<Profile postsRoute='likes'/>}/>
+    //     </Route>
+    //   </Route>
+
+    //   <Route path={routes.following} element={isLoggedIn ? <MainLayout/> : <Navigate to={routes.login}/>}>
+    //     <Route path={routes.following} element={<Home/>}/>
+    //   </Route>
+
+    //   <Route path={routes.singlePiupiu(':id')} element={<MainLayout/>}>
+    //     <Route path={routes.singlePiupiu(':id')} element={<SinglePiupiu/>}/>
+    //   </Route>
+
+    //   <Route path="/*" element={<Navigate replace to={routes.home}/>}/>
+     
+    // </Routes>
+    // )

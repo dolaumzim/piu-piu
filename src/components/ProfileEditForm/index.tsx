@@ -17,7 +17,7 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
   const [description, setDescription] = useState(user.description || "");
   const [name, setName] = useState(user.name);
 
-  const {localUser, setLocalUser} = useGlobal()
+  const {localUser, setLocalUser,token} = useGlobal()
 
   const handleOnSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
@@ -30,18 +30,13 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
 
       try {
         const updatedUser = {...localUser, ...userData}
-        await editUserRequest(localUser.handle, updatedUser )
+        await editUserRequest(localUser.handle, updatedUser, token)
         localStorage.setItem('user', JSON.stringify(updatedUser))
         setLocalUser(updatedUser)
-        
       } catch (error) {
         console.log(error)
-      } finally{
-
-      }
+      } 
   
-
-    
   };
   
   return (

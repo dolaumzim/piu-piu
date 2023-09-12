@@ -14,6 +14,7 @@ type NavTitleProps = {
     onClick?: () => void;
     newPosts?: Piu[];
   };
+  newPiusCount? : number;
 };
 
 export const NavTitle = ({
@@ -21,7 +22,8 @@ export const NavTitle = ({
   navOptions,
   position,
   refreshButton,
-}: NavTitleProps) => {
+  newPiusCount,
+}: NavTitleProps ) => {
   const refreshButtonValues = useMemo(() => {
     return [
       ...new Map(
@@ -29,7 +31,8 @@ export const NavTitle = ({
           ?.filter((item) => true) //item.author.handle !== user?.handle  <- o user aqui é o usuário logado
           .map((item) => [item.author?.handle, item.author])
       ).values(),
-    ].slice(0, 3);
+    ].slice(0, newPiusCount);
+    
   }, [refreshButton?.newPosts]);
 
   return (
