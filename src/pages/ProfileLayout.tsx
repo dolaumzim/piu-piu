@@ -1,23 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo} from "react";
 import { NavHeader } from "../components/NavHeader";
 import NavTitle from "../components/NavTitle";
 import ProfilePic from "../components/ProfilePic";
 import { Username } from "../components/Username";
 import { User } from "../types/Users";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { BsFillPencilFill } from "react-icons/bs";
 import { ProfileEditForm } from "../components/ProfileEditForm";
 import { Dialog } from "../components/Dialog";
 import { routes } from "../routes";
+import { useGlobal } from "../context/global";
+import { postsRequest } from "../service/requestsAPI";
 
 export const ProfileLayout = () => {
   const [user, setUser] = useState<User>();
   const [userPosts, setUserPosts] = useState<number>();
   const [dialogOpen, setDialogOpen] = useState(false);
+  let liveHandle = useParams()
 
-  const handleDialogClick = () => {
+  const handleDialogClick = async() => {
     setDialogOpen(!dialogOpen);
   };
+
+  const {localUser} = useGlobal()
+  const navigate = useNavigate()
+
+  let getLiveHandle =()=>{
+    return liveHandle.handle
+  }
+
+  const getProfile = async(handle : string) =>{
+    try {
+      const response = await postsRequest(handle)
+      setUserPosts(response.data.posts)
+      setUser(response.data.user)
+    } catch (error) {
+      console.log(error)
+      navigate('/home')
+    }
+
+  }
+
+  useEffect(()=>{
+    const liveUser = getLiveHandle()
+    getProfile(liveUser ? liveUser : '')
+  },[liveHandle])
+
 
   return (
     <>
@@ -43,12 +71,14 @@ export const ProfileLayout = () => {
                 image={user?.image_url}
               />
             </div>
+            {user?.handle === localUser.handle ? 
             <div
               onClick={handleDialogClick}
               className="absolute cursor-pointer rounded-full bg-zinc-950 hover:bg-zinc-900 p-6 right-4 top-4"
             >
               <BsFillPencilFill />
-            </div>
+            </div> : null
+            }
           </div>
           <div>
             <Username size="xl" variant="column" user={user} />
@@ -63,8 +93,8 @@ export const ProfileLayout = () => {
         }}
         open={dialogOpen}
       >
-        {user && <ProfileEditForm onSubmit={() => {}} user={user} />}
+        {user && <ProfileEditForm onSubmit={() => setDialogOpen(!dialogOpen)} user={user} />}
       </Dialog>
     </>
   );
-};
+}

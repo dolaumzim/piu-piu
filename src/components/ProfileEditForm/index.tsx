@@ -4,6 +4,8 @@ import ProfilePic from "../ProfilePic";
 import { User } from "../../types/Users";
 import Button from "../Button";
 import { Textarea } from "../Textarea";
+import { editUserRequest } from "../../service/requestsAPI";
+import { useGlobal } from "../../context/global";
 
 type ProfileEditFormProps = {
   onSubmit?: (user: Partial<User>) => void;
@@ -15,7 +17,9 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
   const [description, setDescription] = useState(user.description || "");
   const [name, setName] = useState(user.name);
 
-  const handleOnSubmit = (e: React.FormEvent) => {
+  const {localUser, setLocalUser} = useGlobal()
+
+  const handleOnSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     const userData: Partial<User> = {
       description,
@@ -23,8 +27,23 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
       name,
     };
     onSubmit?.(userData);
-  };
 
+      try {
+        const updatedUser = {...localUser, ...userData}
+        await editUserRequest(localUser.handle, updatedUser )
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+        setLocalUser(updatedUser)
+        
+      } catch (error) {
+        console.log(error)
+      } finally{
+
+      }
+  
+
+    
+  };
+  
   return (
     <>
       <form

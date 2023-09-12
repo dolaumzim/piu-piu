@@ -1,10 +1,12 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CompletePiupiu } from "../components/CompletePiupiu";
 import { NavHeader } from "../components/NavHeader";
 import { Piu } from "../types/Pius";
 import NewPiupiu from "../components/NewPiupiu";
 import { PiupiuList } from "../components/PiupiuList";
 import { User } from "../types/Users";
+import { likeRequest, singlePiuRequest } from "../service/requestsAPI";
+import { useParams } from "react-router-dom";
 
 export const SinglePiupiu = () => {
   const [replies, setReplies] = useState<Piu[]>();
@@ -12,14 +14,30 @@ export const SinglePiupiu = () => {
   const [post, setPost] = useState<Piu>();
   const [userReply, setuserReply] = useState("");
   const [replying, setReplying] = useState(false);
-
-  const getReplies = useCallback(async () => {}, []);
-
+  const {id} = useParams()
+  
+  const teste = async () =>{
+  const response = await singlePiuRequest(id ? id : '')
+  setPost(response.data)
+  }
+ 
+  useEffect(()=> {
+    teste()
+  },[])
+  
   const handleSubmit = async (e: React.FormEvent, replyText?: string) => {
     console.log(e, replyText);
   };
 
-  const handleLike = useCallback(async () => {}, []);
+  const getReplies = useCallback(async () => {}, []);
+
+  const handleLike = useCallback(async () => {
+    try {
+      await likeRequest(id ? id : '', liked)
+    } catch (error) {
+      
+    }
+  }, []);
 
   return (
     <>
