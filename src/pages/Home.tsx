@@ -18,74 +18,81 @@ export const Home = () => {
   const [newData, setNewData] = useState<Piu[] | undefined>();
   const [addingPiupiu, setAddingPiupiu] = useState(false);
   const [newPiusCount, setNewPiusCount] = useState<number>(0);
-  
+
   const topRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const itemsPerPage = Math.ceil(window.screen.height / piuComponentHeight);
-  const isOnTop = useVisible(topRef)
 
-  const {localUser,token} = useGlobal()
+  const isOnTop = useVisible(topRef); //hook para lidar com o botão de refresh
+  const { localUser, token } = useGlobal();
 
   const { scrollTop } = usePagination({
     onBottomEnter: () => {
-      hasNextPage && fetchNextPage()
+      hasNextPage && fetchNextPage();
     },
-    onTopEnter: () => {setNewData([])},
+    onTopEnter: () => {
+      setNewData([]);
+    },
     onTopLeave: () => {},
     bottomRef,
     topRef,
     refreshVariable: piupius,
   });
-  
-  const{ isLoading, isFetching, fetchNextPage, hasNextPage, refetch} = useInfiniteQuery(
-    ['setpiupius'],
-    async({pageParam = 1})=>
+
+  const { isLoading, isFetching, fetchNextPage, hasNextPage, refetch } =
+    useInfiniteQuery(
+      ["setpiupius"],
+      async ({ pageParam = 1 }) => {
+        const response = await piuListRequest(
+          "",
+          pageParam,
+          itemsPerPage,
+          token
+        );
+        return response;
+      },
       {
-      const response  = await piuListRequest('', pageParam, itemsPerPage, token)
-      return response
-      },
-      {getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.currentPage < allPages[0].totalPages) {
-          return lastPage.currentPage + 1
-        }
-        return undefined;
-      },
-      onSuccess : (response) => {
-        setPiupius(response.pages.flatMap((obj)=>obj?.data))
-        
-      },
-      structuralSharing(oldData, newData){
-        if(oldData){
-          if (oldData.pages[0].totalPius !== newData.pages[0].totalPius){
-            if(!isOnTop)(setNewData(newData.pages[0].data))}
-          setNewPiusCount(newData.pages[0].totalPius - oldData.pages[0].totalPius)
-        }
-        return newData
-      
-      },
-      refetchInterval: 20000,
-      },
-    
-  )
+        getNextPageParam: (lastPage, allPages) => {
+          if (lastPage.currentPage < allPages[0].totalPages) {
+            return lastPage.currentPage + 1;
+          }
+          return undefined;
+        },
+        onSuccess: (response) => {
+          setPiupius(response.pages.flatMap((obj) => obj?.data)); // mapeia todos os pius para listá-los
+        },
+        structuralSharing(oldData, newData) {
+          if (oldData) {
+            if (oldData.pages[0].totalPius !== newData.pages[0].totalPius) {
+              if (!isOnTop) setNewData(newData.pages[0].data); //botão refresh aparece apenas se o usuário não
+            }                                                  //estiver no topo     
+            setNewPiusCount( // contador para mostrar no botão de refresh o número certo de pessoas que piaram
+              newData.pages[0].totalPius - oldData.pages[0].totalPius
+            );
+          }
+          return newData;
+        },
+        refetchInterval: 20000,
+      }
+    );
 
   const handleSubmit = async (e: React.FormEvent, formValue?: string) => {
     e.preventDefault();
-    
-  try {
-    setAddingPiupiu(true);
-    newPiuRequest(formValue, token)
-  } catch (error) {
-    console.log(error)
-  } finally{
-    refetch()
-    setTextValue('')
-    setAddingPiupiu(false)
-  }  
+    try {
+      setAddingPiupiu(true);
+      newPiuRequest(formValue, token);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      refetch();
+      setTextValue("");
+      setAddingPiupiu(false);
+    }
   };
 
   return (
     <div className="relative">
-      <NavTitle 
+      <NavTitle
         position="sticky"
         navOptions={[
           { title: "Para você", path: routes.home },
@@ -97,13 +104,13 @@ export const Home = () => {
             scrollTop();
           },
         }}
-        newPiusCount={newPiusCount}
-        
+        newPiusCount={newPiusCount} // criado para adequar as fotos no botão de refresh à quantidade de
+                                    // usuários que enviaram novos pius
       >
         <h2 className="text-xl font-bold px-4 py-3 ">Casa</h2>
       </NavTitle>
-      <div ref={topRef}></div>
-      <NewPiupiu 
+      <div ref={topRef}></div> {/* div criada para servir de referência para o botão de refresh */ }
+      <NewPiupiu
         loading={addingPiupiu}
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}

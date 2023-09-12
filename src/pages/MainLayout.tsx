@@ -8,21 +8,19 @@ import { useGlobal } from "../context/global";
 import { useQuery } from "@tanstack/react-query";
 
 export const MainLayout = () => {
-  const {token} = useGlobal()
-  
-  const {isLoading, data} = useQuery(
-    {
-      queryKey : ['latestPius'],
-      queryFn : async() =>{
-        return await latestRequest(token)
-      },
-      onError: (error)=>{
-        console.log(error)
-      },
-      refetchInterval: 300000
-    }
-  )
-  
+  const { token } = useGlobal();
+
+  const { isLoading, data } = useQuery({
+    queryKey: ["latestPius"],
+    queryFn: async () => {
+      return await latestRequest(token);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    refetchInterval: 300000,
+  });
+
   return (
     <>
       <SideBar />

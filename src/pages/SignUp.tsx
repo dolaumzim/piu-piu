@@ -4,37 +4,37 @@ import { Input } from "../components/Input";
 import { AuthFormLayout } from "../components/AuthFormLayout";
 import { useNavigate } from "react-router-dom";
 import { singUpRequest } from "../service/requestsAPI";
+import { routes } from "../routes";
 
 export const SignUp = () => {
   const [name, setName] = useState("");
   const [handle, setHandle] = useState("");
   const [password, setPassword] = useState("");
   const [signingUp, setSigningUp] = useState(false);
-  const [signUpError, setSignUpError] = useState(false)
+  const [signUpError, setSignUpError] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
     signUpRequisition();
     e.preventDefault();
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const signUpRequisition = async() => {
-  try {
-    setSigningUp(true)
-    await singUpRequest(name,handle,password)
-    navigate('/')
-  } catch (error) {
-    console.log(error)
-    setSignUpError(true)
-    setTimeout(() => {
-      setSignUpError(false)
-    }, 3000);
-  }
-  finally{
-    setSigningUp(false)
-  }
-  }
+  const signUpRequisition = async () => {
+    try {
+      setSigningUp(true);
+      await singUpRequest(name, handle, password);
+      navigate(routes.login);
+    } catch (error) {
+      console.log(error);
+      setSignUpError(true);
+      setTimeout(() => {
+        setSignUpError(false);
+      }, 3000);
+    } finally {
+      setSigningUp(false);
+    }
+  };
 
   return (
     <AuthFormLayout>
@@ -60,7 +60,11 @@ export const SignUp = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {signUpError ? <span className="text-red-600 mx-auto ">Erro no cadastro, tente novamente!</span> : null}
+        {signUpError ? (
+          <span className="text-red-600 mx-auto ">
+            Erro no cadastro, tente novamente!
+          </span>
+        ) : null}
         <Button loading={signingUp} thickness="thick">
           Cadastrar
         </Button>

@@ -11,20 +11,24 @@ type ProfileProps = {
 };
 export const Profile = ({ postsRoute }: ProfileProps) => {
   const [piupius, setPiupius] = useState<Piu[] | undefined>();
-  let {handle} = useParams()
-  const {token} = useGlobal()
-  
-  const {isFetching} = useQuery({
-    queryKey : ['postsAndLikes', postsRoute, handle],
-    queryFn : async() => {
-      const response = await userPiuListRequest(handle ?? '', postsRoute, token)
-      setPiupius(response)
-      return response
+  let { handle } = useParams();
+  const { token } = useGlobal();
+
+  const { isFetching } = useQuery({
+    queryKey: ["postsAndLikes", postsRoute, handle],
+    queryFn: async () => {
+      const response = await userPiuListRequest(
+        handle ?? "",
+        postsRoute,
+        token
+      );
+      setPiupius(response);
+      return response;
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
     },
-  })
+  });
 
   return (
     <>
