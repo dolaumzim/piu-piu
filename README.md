@@ -1,28 +1,96 @@
-- Eu COMO Elon Musk, gostaria de proteger todas as rotas do aplicativo para que apenas pessoas cadastradas tenham acesso
+# Piu Piu - Armando Assini
 
-  - As páginas de login e signup devem ser públicas
-    - Usuarios logados tentando acessar essas rotas devem ser redirecionados para a home
-  - As rotas /home /:handle/\* /piu/:id só devem ser acessáveis por usuários logados
-    - Quando o usuário acessar o seu próprio perfil, ele, e apenas ele, deve ser capaz de alterar sua imagem, descrição e nome
-  - O token e demais informações do usuário devem ser salvos no local storage
+O presente projeto consiste no desenvolvimento das funções básicas de funcionamento do *Piu Piu*, um clone do Twitter criado pelo professor.
 
-- Eu COMO usuário gostaria de rotas para navegar pela aplicação e ver dados relevantes em cada uma delas
+Todo o processo foi desenvolvido utilizando _ReactJS_.
 
-  - A rota /home deve exibir uma lista de posts e a possibilidade de criar um novo post
-  - A rota /:handle deve exibir os dados do usuário da handle especificada e, por padrão, os posts do usuário organizados em ordem decrescente de data de criação
-  - A rota /:handle/likes deve exibir os dados do usuário da handle especificada e a lista de posts curtidos pelo usuário em ordem decrescente de data de curtida
-  - A rota /piu/:id deve exibir a piada ( o post ) correspondente ao id além de todas as respostas a esse post, em ordem decrescente de data de criação
-  - Rotas incorretas ou não existentes devem redirecionar o usuário para /home
+## Começando
 
-- Eu COMO usuário gostaria que as páginas exibissem o conteúdo relativo e que minhas modificações fossem persistidas e enviadas para os demais usuários
+Para rodar o projeto é necessario clonar o repositório para seu computador e fazer as instalações mencionadas a seguir para rodá-lo em browser. Todos os browsers são suportados, porém é possível que ocorram leves diferenças de visualização dependendo do software e da versão do software utilizados.
 
-  - A página principal exibir os posts em ordem decrescente. Os dados exibidos devem ser revalidados a cada, pelo menos, 20 segundos ( não coloquem mais que 15s porque não sei se meu back aguenta 😑 )
-    - Os posts da página principal serão paginados e com ‘scroll infinito’
-    - Se o usuário NÃO estiver visualizando o topo da página ( o post mais recente ), o botão de refresh deve ser exibido, mostrando as imagens dos usuários que fizeram os posts mais recentes
-    - Se o usuário estiver visualizando o topo da página, os novos dados devem ser exibidos imediatamente
-    - Mudanças nos posts que já existem na página devem ser aplicadas SEMPRE, independente da posição do scroll do usuário
-  - A página principal deve exibir os últimos usuários cadastrados e deve ser atualizado a cada, pelo menos, 5 minutos ( Mesma coisa, vamos brincar nessa casa de tempo pra não derrubar meu back )
-  - As páginas de usuários deverão exibir todos os posts ou todos as curtidas do usuário especificado na rota, seguindo as regras dadas na história de rotas.
-    - Os dados das páginas de usuários NÃO serão paginados
-  - As páginas dos pius ( posts ) deverão exibir as informações relativas ao post especificado pelo id na rota e TODAS as suas respostas
-    - As respostas NÃO serão paginadas
+### Instalação
+
+Para realizar as instalações necessárias, siga o seguinte passo a passo:
+
+Primeiramente clone o repositório para sua máquina, utilize o método de clone que preferir:
+
+    https://git.raroacademy.com.br/armando.assini/atividade-avaliativa-8
+
+Em seguida abra o repositório e utilize o seguinte comando para instalar as dependências do projeto:
+
+    npm install
+
+A partir destas instalações o projeto já estará funcional. Rodando o comando seguinte, um servidor irá abrir onde a aplicação estará rodando:
+
+    npm run dev
+
+No terminal será mostrado um link de onde pode ser visualizada a aplicação:
+
+![http://localhost:5173](<./src/assets//LinkLocal.png>)
+
+Clicando no link ou copiando a url para um navegador já será possível visualizar o trabalho.
+
+## Visão Geral do Projeto
+
+Para a realização do projeto foi fornecido um repositório contento todo o conteúdo utilizado na criação do *Piu Piu*, porém foram retiradas grande parte das funções que permitem o funcionamento do mesmo. A partir do repositório foram desenvolvidas as funções que permitiram o funcionamento do mesmo.
+
+Também nos foi apresentada uma versão funcional do site, desenvolvido pelo professor, podendo ser utilizado para testes e comparações.
+
+## Construção do Projeto
+
+### Objetivo
+
+Como mencionado o projeto foi todo realizado utilizando _ReactJS_.
+
+O objetivo principal da prática foi habituar os alunos com a utilização de *contextos*, *react-router-DOM*, *react Query* além da utilização de todas as funcionalidades do *React*. 
+
+### Desenvolvimento
+
+Após clonar o repositório fornecido pelo professor, foi realizada uma varredura dos códigos e das telas para compreender o funcionamento do programa, para que em seguida fosse possível iniciar o desenvolvimento.
+
+Por se tratar de um projeto relativamente grande, torna-se inviável a demonstração de cada passo do desenvolvimento, portanto serão dispostas as mudanças realizadas de forma ampla, e fica a cargo do leitor consultar o código caso julgue necessário.
+
+#### Roteamento
+
+O projeto foi desenvolvido com uma variedade de telas, inclusive utilizando layouts que permitiam a troca apenas de parte da visualização da tela durante a navegação. Portanto foi necessária a utilização de roteamento, como mencionado anteriormente, utilizando *react-router-DOM*.
+
+Como é necessário realizar login para acessar o domínio, existem rotas públicas e privadas, essas foram separadas utilizando um contexto com informações de login, utilizados como autorização de acesso a cada rota.
+
+#### Contexto
+
+Como mencionado foi criado um contexto envolvendo as informações do usuário logado, dessa forma o acesso às informações pode ser realizada de qualquer ponto do código (desde que envolvidos pelo contexto). Dessa forma além de utilizar essas informações como autorização de acesso às rotas privadas, também foram utilizadas as informações do usuário em funções do tipo: *postar*, *like*, *editar perfil*.
+
+#### Geral
+
+Para o desenvolvimento das funções foram utilizados os conhecimentos préviamente desenvolvidos em sala de aula, desta vez focados em uso de *contexto* e *react Query*. Foi preciso atentar às propriedades dos componentes e elementos já existentes, para que os retornos das funções criadas fossem compatíveis. 
+
+
+### Dificuldades Encontradas
+
+Nesta atividade foram encontrados diversos desafios, começando pela interpretação de um código 'semi pronto'. Como se tratava de um código de onde foram retiradas funções, ficou a meu encargo, compreender como deveriam ser desenvolvidas as funções para que tivessem um comportamento já pensado e desenvolvido pelo professor. Além disso, boa parte do código envolvia técnicas recém estudadas e ainda não muito consolidadas em meu conhecimento, logo, a primeira dificuldade veio da compreensão do código.
+
+Prosseguindo na atividade encontrei uma dificuldade em compreender a utilização do *local storage* em conjunto com o *contexto*, pois cada situação exigia um tipo de utilização e isso complicou um pouco o desenvolvimento, porém após alguns dias de estudo e apoio dos monitores, essas dúvidas foram sanadas.
+
+Importante denotar que em várias situações percebi problemas de performance causadas pelo meu código, em algumas situações consegui resolvê-los, porém existem casos que não encontrei uma solução.
+
+Finalmente é importante citar também que a quantidade de detalhes existentes em um código complexo, e que é possível ter uma utilização completa, inclusive com interação entre usuários me deixou um pouco preso. Inúmeras vezes foquei em pequenos detalhes, muitas vezes estéticos, que não fariam diferença na utilização do site, e isso me custou tempo que poderia ser utilizado em melhorias reais.
+
+## Conclusão
+
+Ao final do projeto foi possível implementar todas as funções solicitadas pelo professor. Foram utilizadas as tecnologias estudadas durante as semanas e o site está funcional.
+
+Infelizmente podem ser notadas demoras em requisições e re-renderizações indevidas.
+
+O código também não está muito limpo pois foi dado o foco inicial no funcionamento e infelizmente o tempo não permitiu uma revisão detalhada de tudo.
+
+## Possíveis Melhoras
+
+- Implementar *deletar piu*
+- Implementar utilização de *embed* de vídeos nos pius;
+- Implementar *perseguir.
+
+## Autor
+
+- **Armando Assini** - *arm.assini@gmail.com*
+
+**Contribuições** - Professores, Monitores e Colegas de classe Turma React2 - Raro Academy.
