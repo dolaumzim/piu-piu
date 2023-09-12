@@ -11,7 +11,7 @@ import { User } from "../../types/Users";
 import { routes } from "../../routes";
 import { useGlobal } from "../../context/global";
 import { newPiuRequest } from "../../service/requestsAPI";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const SideBar = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -24,7 +24,6 @@ export const SideBar = () => {
 
   const handleSubmit = async (e: React.FormEvent, formValue?: string) => {
     e.preventDefault();
-
 
     try {
       setAddingPiupiu(true);
@@ -43,7 +42,7 @@ export const SideBar = () => {
   const handleLogOut = ()=>{
     localStorage.clear()
     setIsLoggedIn(false)
-    navigate('/')
+    navigate(routes.login)
   }
 
   return (

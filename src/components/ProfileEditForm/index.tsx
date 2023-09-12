@@ -36,7 +36,6 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
       } catch (error) {
         console.log(error)
       } 
-  
   };
   
   return (

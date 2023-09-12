@@ -3,10 +3,9 @@ import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { AuthFormLayout } from "../components/AuthFormLayout";
 import { Link, useNavigate } from "react-router-dom";
-import { postsRequest, logInRequest } from "../service/requestsAPI";
+import { logInRequest } from "../service/requestsAPI";
 import { useGlobal } from "../context/global";
 import { routes } from "../routes";
-
 
 export const Login = () => {
   const [user, setUser] = useState("");

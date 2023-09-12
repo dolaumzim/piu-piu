@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo} from "react";
+import { useState } from "react";
 import { NavHeader } from "../components/NavHeader";
 import NavTitle from "../components/NavTitle";
 import ProfilePic from "../components/ProfilePic";
@@ -10,35 +10,35 @@ import { ProfileEditForm } from "../components/ProfileEditForm";
 import { Dialog } from "../components/Dialog";
 import { routes } from "../routes";
 import { useGlobal } from "../context/global";
-import { postsRequest } from "../service/requestsAPI";
+import { profilePostsRequest } from "../service/requestsAPI";
 import { useQuery } from "@tanstack/react-query";
 
 export const ProfileLayout = () => {
   const [user, setUser] = useState<User>();
   const [userPosts, setUserPosts] = useState<number>();
   const [dialogOpen, setDialogOpen] = useState(false);
-  let {handle} = useParams()
+  let { handle } = useParams();
 
-  const handleDialogClick = async() => {
+  const handleDialogClick = async () => {
     setDialogOpen(!dialogOpen);
   };
 
-  const {localUser,token} = useGlobal()
-  const navigate = useNavigate()
+  const { localUser, token } = useGlobal();
+  const navigate = useNavigate();
 
   const {} = useQuery({
-    queryKey : ['profilePosts', handle],
-    queryFn : async() =>{
-      const response = await postsRequest(handle ?? '',token)
-      setUserPosts(response.data.posts)
-      setUser(response.data.user)
-      return response
+    queryKey: ["profilePosts", handle],
+    queryFn: async () => {
+      const response = await profilePostsRequest(handle ?? "", token);
+      setUserPosts(response.data.posts);
+      setUser(response.data.user);
+      return response;
     },
     onError: () => {
-      navigate(routes.home)
+      navigate(routes.home);
     },
-    retry : 0
-  })
+    retry: 0,
+  });
 
   return (
     <>
@@ -64,14 +64,14 @@ export const ProfileLayout = () => {
                 image={user?.image_url}
               />
             </div>
-            {user?.handle === localUser.handle ? 
-            <div
-              onClick={handleDialogClick}
-              className="absolute cursor-pointer rounded-full bg-zinc-950 hover:bg-zinc-900 p-6 right-4 top-4"
-            >
-              <BsFillPencilFill />
-            </div> : null
-            }
+            {user?.handle === localUser.handle ? (//botão de edição só aparece no perfil do usuário logado
+              <div
+                onClick={handleDialogClick}
+                className="absolute cursor-pointer rounded-full bg-zinc-950 hover:bg-zinc-900 p-6 right-4 top-4"
+              >
+                <BsFillPencilFill />
+              </div>
+            ) : null}
           </div>
           <div>
             <Username size="xl" variant="column" user={user} />
@@ -86,8 +86,13 @@ export const ProfileLayout = () => {
         }}
         open={dialogOpen}
       >
-        {user && <ProfileEditForm onSubmit={() => setDialogOpen(!dialogOpen)} user={user} />}
+        {user && (
+          <ProfileEditForm
+            onSubmit={() => setDialogOpen(!dialogOpen)}
+            user={user}
+          />
+        )}
       </Dialog>
     </>
   );
-}
+};
